@@ -1,0 +1,2 @@
+class CrawliexpressException(Exception):
+    pass
