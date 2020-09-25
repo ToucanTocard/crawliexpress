@@ -26,3 +26,5 @@ class Feedback:
         self.comment = node_comment_span.text
 
         print(f"{self.datetime}: {self.comment}\n")
+
+        # TODO: images
