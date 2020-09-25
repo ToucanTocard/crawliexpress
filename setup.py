@@ -20,7 +20,7 @@ setuptools.setup(
     ],
     license="MIT",
     python_requires=">=3.6",
-    install_requires=["requests", "jsonnet"],
+    install_requires=["requests", "jsonnet", "bs4"],
     setup_requires=[],
     tests_require=[],
 )

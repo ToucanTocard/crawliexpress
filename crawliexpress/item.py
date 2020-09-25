@@ -18,7 +18,7 @@ class Item:
 
         matches = self.run_params_re.search(html)
         if matches is None:
-            raise CrawliexpressException("could not parse item from html")
+            raise CrawliexpressException("could not find runParams")
 
         self.run_params = run_params = json.loads(
             _jsonnet.evaluate_snippet("snippet", matches.group(1))
