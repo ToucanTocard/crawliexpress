@@ -25,8 +25,8 @@ class Client:
         company_id=None,
         v=2,
         member_type="seller",
-        page="1",
-        with_picture=True,
+        page=1,
+        with_picture=False,
     ):
         params = urllib.parse.urlencode(
             {
@@ -35,8 +35,8 @@ class Client:
                 "companyId": company_id,
                 "v": v,
                 "memberType": member_type,
-                "page": page,
-                "withPicture": with_picture,
+                "page": str(page),
+                "withPictures": with_picture,
             }
         )
         url = f"{self.feedback_url}?{params}"
