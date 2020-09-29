@@ -1,16 +1,56 @@
 from crawliexpress.exception import CrawliexpressException
 
+import re
 from bs4 import BeautifulSoup
 
 
+RATING_RE = re.compile(r"width:(\d+)%")
+
+
 class Feedback:
+    user = None
+    profile = None
+    country = None
+    rating = None
     datetime = None
     comment = None
     images = None
 
     def from_node(self, node):
 
-        node_comment = node.find("", class_="buyer-feedback")
+        # user name
+        node_user = node.find("", class_="user-name")
+        if node_user is None:
+            raise CrawliexpressException("could not find feedback user node")
+        self.user = node_user.text.strip()
+
+        # profile
+        node_profile = node_user.find("a")
+        # profile can be hidden
+        if node_profile is not None:
+            self.profile = node_profile["href"]
+
+        # country
+        node_country = node.find("", class_="user-country")
+        if node_country is None:
+            raise CrawliexpressException("could not find feedback country node")
+        self.country = node_country.text
+
+        # rating
+        node_rating = node.find("", class_="star-view")
+        if node_rating is None:
+            raise CrawliexpressException("could not find feedback rating node")
+        for node_rating_stars in node_rating.children:
+            rating_matches = RATING_RE.search(node_rating_stars["style"])
+            if rating_matches is not None:
+                self.rating = int(rating_matches.group(1))
+
+        # review part
+        node_review = node.find("", class_="buyer-review")
+        if node_review is None:
+            raise CrawliexpressException("could not find feedback review node")
+
+        node_comment = node_review.find("", class_="buyer-feedback")
         if node_comment is None:
             raise CrawliexpressException("could not find feedback comment node")
 
@@ -34,6 +74,10 @@ class Feedback:
                 images.append(node_image["src"])
 
     def __iter__(self):
+        yield "user", self.user
+        yield "profile", self.profile
+        yield "country", self.country
+        yield "rating", self.rating
         yield "datetime", self.datetime
         yield "comment", self.comment
         yield "images", self.images

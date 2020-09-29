@@ -1,19 +1,37 @@
+from crawliexpress.exception import CrawliexpressException
 from crawliexpress.item import Item
 from crawliexpress.feedback_page import FeedbackPage
+from crawliexpress.search_page import SearchPage
 
 import requests
 import urllib
 
 
+FEEDBACK_URL = "https://feedback.aliexpress.com/display/productEvaluation.htm"
+
+
 class Client:
     base_url = None
-    feedback_url = "https://feedback.aliexpress.com/display/productEvaluation.htm"
 
-    def __init__(self, base_url):
+    # cookies to avoid capcha
+    xman_t = None
+    x5sec = None
+
+    # cookies for category search
+    aep_usuc_f = None
+
+    def __init__(self, base_url, xman_t=None, x5sec=None, aep_usuc_f=None):
         self.base_url = base_url
+        self.xman_t = xman_t
+        self.x5sec = x5sec
+        self.aep_usuc_f = aep_usuc_f
 
     def get_item(self, item_id):
         r = requests.get(f"{self.base_url}/item/{item_id}.html")
+        if r.status_code != 200:
+            raise CrawliexpressException(
+                f"could not get item: invalid status code {r.status_code}"
+            )
         item = Item()
         item.from_html(r.text)
         return item
@@ -39,8 +57,53 @@ class Client:
                 "withPictures": with_picture,
             }
         )
-        url = f"{self.feedback_url}?{params}"
+        url = f"{FEEDBACK_URL}?{params}"
         r = requests.get(url)
+        if r.status_code != 200:
+            raise CrawliexpressException(
+                f"could not get feedbacks: invalid status code {r.status_code}"
+            )
         feedback_page = FeedbackPage()
         feedback_page.from_html(r.text)
         return feedback_page
+
+    def get_search(self, page_no, category_id=0, search_text=None, sort_by="default"):
+
+        """
+        sort_by can be:
+        - default: best
+        - orders: total_tranpro_desc
+        """
+
+        params = {
+            "trafficChannel": "main",
+            "d": "y",
+            "CatId": category_id,
+            "ltype": "wholesale",
+            "SortType": sort_by,
+            "page": page_no,
+            "origin": "y",
+            "isrefine": "y",
+        }
+        if search_text is not None:
+            params["SearchText"] = search_text
+        params = urllib.parse.urlencode(params)
+        url = f"{self.base_url}/glosearch/api/product?{params}"
+        headers = {"Accept": "application/json"}
+        cookies = {
+            "xman_t": self.xman_t,
+            "x5sec": self.x5sec,
+            "aep_usuc_f": self.aep_usuc_f,
+        }
+        r = requests.get(url, headers=headers, cookies=cookies)
+        if r.status_code != 200:
+            raise CrawliexpressException(
+                f"could not get search: invalid status code {r.status_code}"
+            )
+        elif not r.headers["Content-Type"].startswith("application/json"):
+            raise CrawliexpressException(
+                f"could not get search: invalid content type, probably a capcha"
+            )
+        search_page = SearchPage()
+        search_page.from_json(page_no, r.json())
+        return search_page

@@ -5,10 +5,10 @@ import json
 import _jsonnet
 
 
+RUN_PARAMS_RE = re.compile(r"window\.runParams = ({.+?});$", re.MULTILINE | re.DOTALL)
+
+
 class Item:
-    run_params_re = re.compile(
-        r"window\.runParams = ({.+?});$", re.MULTILINE | re.DOTALL
-    )
     run_params = None
     product_id = None
     owner_member_id = None
@@ -16,7 +16,7 @@ class Item:
 
     def from_html(self, html):
 
-        matches = self.run_params_re.search(html)
+        matches = RUN_PARAMS_RE.search(html)
         if matches is None:
             raise CrawliexpressException("could not find runParams")
 

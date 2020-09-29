@@ -15,7 +15,7 @@ class FeedbackPage:
 
         # feedbacks
         feedbacks = self.feedbacks = list()
-        for node in soup.find_all("", class_="buyer-review"):
+        for node in soup.find_all("", class_="feedback-item"):
             feedback = Feedback()
             feedback.from_node(node)
             feedbacks.append(feedback)
