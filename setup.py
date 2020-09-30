@@ -5,15 +5,16 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="crawliexpress",  # Replace with your own username
-    version="0.0.1",
+    version="0.1.0",
     author="ToucanTocard",
     author_email="contact@robin.ninja",
-    description="Another Aliexpress Crawler",
+    description="Python3 library to ease Aliexpress crawling",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://github.com/toucantocard/crawliexpress",
     packages=setuptools.find_packages(include=["crawliexpress"]),
     classifiers=[
+        "Development Status :: 4 - Beta",  # Chose either "3 - Alpha", "4 - Beta" or "5 - Production/Stable" as the current state of your package
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
@@ -23,4 +24,5 @@ setuptools.setup(
     install_requires=["requests", "jsonnet", "bs4", "lxml"],
     setup_requires=[],
     tests_require=[],
+    keywords=["aliexpress"],
 )

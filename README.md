@@ -8,7 +8,7 @@
 
 Allows to fetch various resources from Aliexpress, such as category, text search, product, feedbacks.
 
-It does not use a headless browser, but parses page source.
+It does not use official API nor a headless browser, but parses page source.
 
 Obviously, it is very vulnerable to DOM changes.
 
@@ -25,7 +25,7 @@ Obviously, it is very vulnerable to DOM changes.
 ### Install
 
 ```bash
-pip install Crawliexpress
+pip install crawliexpress
 ```
 
 ### Item
@@ -203,3 +203,11 @@ Number of results per page
 #### method has_next_page
 
 Returns True if it's not the last page, useful to crawl feedbacks
+
+### Crawliexpress.CrawliexpressException
+
+Raised on various source parsing fails
+
+### Crawliexpress.CrawliexpressCaptchaException
+
+Raised when a captcha is detected
