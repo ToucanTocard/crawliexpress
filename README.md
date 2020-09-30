@@ -1,7 +1,3 @@
-# Todo
-
-- setup.py keywords
-
 # Crawliexpress
 
 ## Presentation
