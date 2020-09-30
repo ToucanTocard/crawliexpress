@@ -1,4 +1,7 @@
-from crawliexpress.exception import CrawliexpressException
+from crawliexpress.exception import (
+    CrawliexpressException,
+    CrawliexpressCaptchaException,
+)
 from crawliexpress.item import Item
 from crawliexpress.feedback_page import FeedbackPage
 from crawliexpress.search_page import SearchPage
@@ -26,12 +29,18 @@ class Client:
         self.x5sec = x5sec
         self.aep_usuc_f = aep_usuc_f
 
+    def __analyze_response(self, response):
+        if response.status_code != 200:
+            raise CrawliexpressException(f"invalid status code {response.status_code}")
+        elif (
+            not response.headers["Content-Type"].startswith("application/json")
+            and "captcha" in response.text
+        ):
+            raise CrawliexpressCaptchaException()
+
     def get_item(self, item_id):
         r = requests.get(f"{self.base_url}/item/{item_id}.html")
-        if r.status_code != 200:
-            raise CrawliexpressException(
-                f"could not get item: invalid status code {r.status_code}"
-            )
+        self.__analyze_response(r)
         item = Item()
         item.from_html(r.text)
         return item
@@ -59,10 +68,7 @@ class Client:
         )
         url = f"{FEEDBACK_URL}?{params}"
         r = requests.get(url)
-        if r.status_code != 200:
-            raise CrawliexpressException(
-                f"could not get feedbacks: invalid status code {r.status_code}"
-            )
+        self.__analyze_response(r)
         feedback_page = FeedbackPage()
         feedback_page.from_html(r.text)
         return feedback_page
@@ -96,14 +102,7 @@ class Client:
             "aep_usuc_f": self.aep_usuc_f,
         }
         r = requests.get(url, headers=headers, cookies=cookies)
-        if r.status_code != 200:
-            raise CrawliexpressException(
-                f"could not get search: invalid status code {r.status_code}"
-            )
-        elif not r.headers["Content-Type"].startswith("application/json"):
-            raise CrawliexpressException(
-                f"could not get search: invalid content type, probably a capcha"
-            )
+        self.__analyze_response(r)
         search_page = SearchPage()
         search_page.from_json(page_no, r.json())
         return search_page
