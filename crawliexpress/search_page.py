@@ -1,4 +1,4 @@
-from crawliexpress.exception import CrawliexpressException
+from crawliexpress.exceptions import CrawliexpressException
 
 
 class SearchPage:

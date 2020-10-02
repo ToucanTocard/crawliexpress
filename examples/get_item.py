@@ -1,4 +1,5 @@
 from crawliexpress import Client
 
 client = Client("https://fr.aliexpress.com")
-client.get_item("4000505787173")
+item = client.get_item("4000505787173")
+print(dict(item))

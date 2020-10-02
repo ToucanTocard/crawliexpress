@@ -1,4 +1,4 @@
-from crawliexpress.exception import CrawliexpressException
+from crawliexpress.exceptions import CrawliexpressException
 from crawliexpress.feedback import Feedback
 
 from bs4 import BeautifulSoup

@@ -1,4 +1,4 @@
-from crawliexpress.exception import (
+from crawliexpress.exceptions import (
     CrawliexpressException,
     CrawliexpressCaptchaException,
 )
