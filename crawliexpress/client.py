@@ -14,6 +14,16 @@ FEEDBACK_URL = "https://feedback.aliexpress.com/display/productEvaluation.htm"
 
 
 class Client:
+
+    """
+    Exposes methods to fetch various resources.
+
+    :param base_url: allows to change locale (not sure about this one)
+    :param xman_t: must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
+    :param x5sec: must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
+    :param aep_usuc_f: must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
+    """
+
     base_url = None
 
     # cookies to avoid capcha
@@ -24,6 +34,7 @@ class Client:
     aep_usuc_f = None
 
     def __init__(self, base_url, xman_t=None, x5sec=None, aep_usuc_f=None):
+
         self.base_url = base_url
         self.xman_t = xman_t
         self.x5sec = x5sec
@@ -39,6 +50,11 @@ class Client:
             raise CrawliexpressCaptchaException()
 
     def get_item(self, item_id):
+
+        """
+        Fetches a product informations from its id
+        """
+
         r = requests.get(f"{self.base_url}/item/{item_id}.html")
         self.__analyze_response(r)
         item = Item()
