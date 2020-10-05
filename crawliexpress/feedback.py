@@ -8,13 +8,25 @@ RATING_RE = re.compile(r"width:(\d+)%")
 
 
 class Feedback:
+
+    """
+    A user feedback
+    """
+
     user = None
+    """Name"""
     profile = None
+    """Profile link"""
     country = None
+    """Country code"""
     rating = None
+    """Rating out of 100"""
     datetime = None
+    """Raw datetime from DOM"""
     comment = None
+    """Review"""
     images = None
+    """List of image links"""
 
     def from_node(self, node):
 

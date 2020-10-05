@@ -69,7 +69,7 @@ while True:
 ### Search / Category
 
 ```python
-rom crawliexpress import Client
+from crawliexpress import Client
 
 from time import sleep
 
@@ -104,7 +104,7 @@ Exposes methods to fetch various resources.
 
 * **Parameters**
 
-    
+
     * **base_url** – allows to change locale (not sure about this one)
 
 
@@ -118,16 +118,198 @@ Exposes methods to fetch various resources.
 
 
 
+#### get_feedbacks(product_id, owner_member_id, company_id=None, v=2, member_type='seller', page=1, with_picture=False)
+Fetches a product feedback page
+
+
+* **Parameters**
+
+
+    * **product_id** – id of the product, item id of [https://fr.aliexpress.com/item/20000001708485.html](https://fr.aliexpress.com/item/20000001708485.html) is 20000001708485
+
+
+    * **owner_member_id** – member id of the product owner, as stored in **Crawliexpress.Item.owner_member_id**
+
+
+    * **page** – page number
+
+
+    * **with_picture** – limit to feedbacks with a picture
+
+
+
+* **Returns**
+
+    a feedback page
+
+
+
+* **Return type**
+
+    Crawliexpress.FeedbackPage
+
+
+
+* **Raises**
+
+    **CrawliexpressException** – if there was an error fetching the dataz
+
+
+
 #### get_item(item_id)
 Fetches a product informations from its id
 
 
-#### get_search(page_no, category_id=0, search_text=None, sort_by='default')
-sort_by can be:
-- default: best
-- orders: total_tranpro_desc
+* **Parameters**
+
+    **item_id** – id of the product to fetch, item id of [https://fr.aliexpress.com/item/20000001708485.html](https://fr.aliexpress.com/item/20000001708485.html) is 20000001708485
+
+
+
+* **Returns**
+
+    a product
+
+
+
+* **Return type**
+
+    Crawliexpress.Item
+
+
+
+* **Raises**
+
+    **CrawliexpressException** – if there was an error fetching the dataz
+
+
+
+#### get_search(page_no=1, category_id=0, search_text=None, sort_by='default')
+Fetches a search page
+
+
+* **Parameters**
+
+
+    * **page_no** – page number
+
+
+    * **category_id** – id of the category, category id of [https://fr.aliexpress.com/category/205000221/t-shirts.html](https://fr.aliexpress.com/category/205000221/t-shirts.html) is 205000221
+
+
+    * **search_text** – text search
+
+
+    * **sort_by** (**default**: best match
+    **total_tranpro_desc**: number of orders) – indeed
+
+
+
+* **Returns**
+
+    a search page
+
+
+
+* **Return type**
+
+    Crawliexpress.SearchPage
+
+
+
+* **Raises**
+
+
+    * **CrawliexpressException** – if there was an error fetching the dataz
+
+
+    * **CrawliexpressCaptchaException** – if there is a captcha, make sure to use valid **xman_t, x5sec, aep_usuc_f** cookie values to avoid this
+
 
 
 ### exception crawliexpress.CrawliexpressCaptchaException()
 
 ### exception crawliexpress.CrawliexpressException()
+
+### class crawliexpress.Feedback()
+A user feedback
+
+
+#### comment( = None)
+Review
+
+
+#### country( = None)
+Country code
+
+
+#### datetime( = None)
+Raw datetime from DOM
+
+
+#### images( = None)
+List of image links
+
+
+#### profile( = None)
+Profile link
+
+
+#### rating( = None)
+Rating out of 100
+
+
+#### user( = None)
+Name
+
+
+### class crawliexpress.FeedbackPage()
+A feedback page
+
+
+#### feedbacks( = None)
+List of **Crawliexpress.Feedback** objects
+
+
+#### has_next_page()
+Returns true if there is a following page, useful for crawling
+
+
+* **Rtype bool**
+
+
+
+#### known_pages( = None)
+Sibling pages
+
+
+#### page( = None)
+Page number
+
+
+### class crawliexpress.SearchPage()
+A search page
+
+
+#### has_next_page()
+Returns true if there is a following page, useful for crawling
+
+
+* **Rtype bool**
+
+
+
+#### items( = None)
+List of products, raw from JS parsing
+
+
+#### page( = None)
+page number
+
+
+#### result_count( = None)
+Number of result for the whole search
+
+
+#### size_per_page( = None)
+Number of result per page

@@ -53,6 +53,11 @@ class Client:
 
         """
         Fetches a product informations from its id
+
+        :param item_id: id of the product to fetch, item id of https://fr.aliexpress.com/item/20000001708485.html is 20000001708485
+        :return: a product
+        :rtype: Crawliexpress.Item
+        :raises CrawliexpressException: if there was an error fetching the dataz
         """
 
         r = requests.get(f"{self.base_url}/item/{item_id}.html")
@@ -71,6 +76,19 @@ class Client:
         page=1,
         with_picture=False,
     ):
+
+        """
+        Fetches a product feedback page
+
+        :param product_id: id of the product, item id of https://fr.aliexpress.com/item/20000001708485.html is 20000001708485
+        :param owner_member_id: member id of the product owner, as stored in **Crawliexpress.Item.owner_member_id**
+        :param page: page number
+        :param with_picture: limit to feedbacks with a picture
+        :return: a feedback page
+        :rtype: Crawliexpress.FeedbackPage
+        :raises CrawliexpressException: if there was an error fetching the dataz
+        """
+
         params = urllib.parse.urlencode(
             {
                 "productId": product_id,
@@ -89,12 +107,22 @@ class Client:
         feedback_page.from_html(r.text)
         return feedback_page
 
-    def get_search(self, page_no, category_id=0, search_text=None, sort_by="default"):
+    def get_search(self, page_no=1, category_id=0, search_text=None, sort_by="default"):
 
         """
-        sort_by can be:
-        - default: best
-        - orders: total_tranpro_desc
+        Fetches a search page
+
+        :param page_no: page number
+        :param category_id: id of the category, category id of https://fr.aliexpress.com/category/205000221/t-shirts.html is 205000221
+        :param search_text: text search
+        :param sort_by: indeed
+        :type sort_by:
+            **default**: best match
+            **total_tranpro_desc**: number of orders
+        :return: a search page
+        :rtype: Crawliexpress.SearchPage
+        :raises CrawliexpressException: if there was an error fetching the dataz
+        :raises CrawliexpressCaptchaException: if there is a captcha, make sure to use valid **xman_t, x5sec, aep_usuc_f** cookie values to avoid this
         """
 
         params = {

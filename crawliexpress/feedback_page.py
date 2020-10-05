@@ -6,9 +6,17 @@ import re
 
 
 class FeedbackPage:
+
+    """
+    A feedback page
+    """
+
     feedbacks = None
+    """List of **Crawliexpress.Feedback** objects"""
     page = None
+    """Page number"""
     known_pages = None
+    """Sibling pages"""
 
     def from_html(self, html):
         soup = BeautifulSoup(html, "lxml")
@@ -41,6 +49,13 @@ class FeedbackPage:
                 known_pages.append(int(page))
 
     def has_next_page(self):
+
+        """
+        Returns true if there is a following page, useful for crawling
+
+        :rtype bool:
+        """
+
         has = False
         for page in self.known_pages:
             if page >= self.page:

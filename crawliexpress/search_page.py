@@ -2,10 +2,19 @@ from crawliexpress.exceptions import CrawliexpressException
 
 
 class SearchPage:
+
+    """
+    A search page
+    """
+
     page = None
+    """page number"""
     result_count = None
+    """Number of result for the whole search"""
     size_per_page = None
+    """Number of result per page"""
     items = None
+    """List of products, raw from JS parsing"""
 
     def from_json(self, page, json):
         self.page = page
@@ -14,6 +23,13 @@ class SearchPage:
         self.items = json["items"]
 
     def has_next_page(self):
+
+        """
+        Returns true if there is a following page, useful for crawling
+
+        :rtype bool:
+        """
+
         return len(self.items) == self.size_per_page
 
     def __iter__(self):
