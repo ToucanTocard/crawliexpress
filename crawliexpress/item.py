@@ -48,11 +48,3 @@ class Item:
         self.title = page_module["title"]
         self.description = page_module["description"]
         self.image = page_module["imagePath"]
-
-    def __iter__(self):
-        yield "product_id", self.product_id
-        yield "owner_member_id", self.owner_member_id
-        yield "company_id", self.company_id
-        yield "title", self.title
-        yield "description", self.description
-        yield "image", self.image

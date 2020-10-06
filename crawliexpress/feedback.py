@@ -1,8 +1,6 @@
 from crawliexpress.exceptions import CrawliexpressException
 
 import re
-from bs4 import BeautifulSoup
-
 
 RATING_RE = re.compile(r"width:(\d+)%")
 
@@ -84,12 +82,3 @@ class Feedback:
         if node_images is not None:
             for node_image in node_images.find_all("img"):
                 images.append(node_image["src"])
-
-    def __iter__(self):
-        yield "user", self.user
-        yield "profile", self.profile
-        yield "country", self.country
-        yield "rating", self.rating
-        yield "datetime", self.datetime
-        yield "comment", self.comment
-        yield "images", self.images

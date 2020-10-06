@@ -35,10 +35,10 @@ class Client:
             jar.load(cookies)
             self.cookies = {key: morsel.value for key, morsel in jar.items()}
 
-    def __analyze_response(self, response):
+    def _analyze_response(self, response):
         if response.status_code != 200:
             raise CrawliexpressException(f"invalid status code {response.status_code}")
-        elif (
+        if (
             not response.headers["Content-Type"].startswith("application/json")
             and "captcha" in response.text
         ):
@@ -56,7 +56,7 @@ class Client:
         """
 
         r = requests.get(f"{self.base_url}/item/{item_id}.html")
-        self.__analyze_response(r)
+        self._analyze_response(r)
         item = Item()
         item.from_html(r.text)
         return item
@@ -97,7 +97,7 @@ class Client:
         )
         url = f"{FEEDBACK_URL}?{params}"
         r = requests.get(url)
-        self.__analyze_response(r)
+        self._analyze_response(r)
         feedback_page = FeedbackPage()
         feedback_page.from_html(r.text)
         return feedback_page
@@ -129,7 +129,7 @@ class Client:
 
         referer = f"{self.base_url}/category/{category_id}/{category_name}.html"
 
-        return self.__get_search(url_params, page, referer=referer)
+        return self._get_search(url_params, page, referer=referer)
 
     def get_search(self, text, page=1, sort_by="default"):
 
@@ -150,7 +150,7 @@ class Client:
 
         referer = f"{self.base_url}/wholesale"
 
-        return self.__get_search(
+        return self._get_search(
             {
                 "SearchText": text,
                 "SortType": sort_by,
@@ -160,7 +160,7 @@ class Client:
             referer=referer,
         )
 
-    def __get_search(self, url_params, page, referer=None):
+    def _get_search(self, url_params, page, referer=None):
 
         # build url
         url_params = {
@@ -185,7 +185,7 @@ class Client:
             headers["Referer"] = f"{referer}?{url_params}"
 
         r = requests.get(url, headers=headers, cookies=self.cookies)
-        self.__analyze_response(r)
+        self._analyze_response(r)
         search_page = SearchPage()
         search_page.from_json(page, r.json())
         return search_page

@@ -63,9 +63,3 @@ class FeedbackPage:
                 break
 
         return has
-
-    def __iter__(self):
-        yield "feedbacks", [dict(feedback) for feedback in self.feedbacks]
-        yield "page", self.page
-        yield "known_pages", self.known_pages
-        yield "has_next_page", self.has_next_page()

@@ -30,11 +30,4 @@ class SearchPage:
         :rtype: bool
         """
 
-        return len(self.items) == self.size_per_page
-
-    def __iter__(self):
-        yield "page", self.page
-        yield "result_count", self.result_count
-        yield "size_per_page", self.size_per_page
-        yield "items", self.items
-        yield "has_next_page", self.has_next_page()
+        return (self.page - 1) * size_per_page + len(items) < self.result_count
