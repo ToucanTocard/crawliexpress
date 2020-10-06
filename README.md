@@ -120,7 +120,7 @@ Exposes methods to fetch various resources.
 
 * **Parameters**
 
-    
+
     * **base_url** – allows to change locale (not sure about this one)
 
 
@@ -134,7 +134,7 @@ Fetches a category page
 
 * **Parameters**
 
-    
+
     * **category_id** – id of the category, category id of [https://www.aliexpress.com/category/205000221/t-shirts.html](https://www.aliexpress.com/category/205000221/t-shirts.html) is 205000220
 
 
@@ -163,7 +163,7 @@ Fetches a category page
 
 * **Raises**
 
-    
+
     * **CrawliexpressException** – if there was an error fetching the dataz
 
 
@@ -177,7 +177,7 @@ Fetches a product feedback page
 
 * **Parameters**
 
-    
+
     * **product_id** – id of the product, item id of [https://www.aliexpress.com/item/20000001708485.html](https://www.aliexpress.com/item/20000001708485.html) is 20000001708485
 
 
@@ -243,7 +243,7 @@ Fetches a search page
 
 * **Parameters**
 
-    
+
     * **text** – text search
 
 
@@ -269,7 +269,7 @@ Fetches a search page
 
 * **Raises**
 
-    
+
     * **CrawliexpressException** – if there was an error fetching the dataz
 
 
@@ -325,7 +325,9 @@ List of **Crawliexpress.Feedback** objects
 Returns true if there is a following page, useful for crawling
 
 
-* **Rtype bool**
+* **Return type**
+
+    bool
 
 
 
@@ -345,7 +347,9 @@ A search page
 Returns true if there is a following page, useful for crawling
 
 
-* **Rtype bool**
+* **Return type**
+
+    bool
 
 
 

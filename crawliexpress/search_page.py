@@ -27,7 +27,7 @@ class SearchPage:
         """
         Returns true if there is a following page, useful for crawling
 
-        :rtype bool:
+        :rtype: bool
         """
 
         return len(self.items) == self.size_per_page

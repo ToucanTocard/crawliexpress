@@ -53,7 +53,7 @@ class FeedbackPage:
         """
         Returns true if there is a following page, useful for crawling
 
-        :rtype bool:
+        :rtype: bool
         """
 
         has = False
