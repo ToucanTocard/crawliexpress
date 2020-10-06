@@ -114,6 +114,24 @@ while True:
 
 ## API
 
+### class crawliexpress.Category(client, category_id, category_name, sort_by='default')
+A category
+
+
+* **Parameters**
+
+
+    * **category_id** – id of the category, category id of [https://www.aliexpress.com/category/205000221/t-shirts.html](https://www.aliexpress.com/category/205000221/t-shirts.html) is 205000220
+
+
+    * **category_name** – name of the category, category name of [https://www.aliexpress.com/category/205000221/t-shirts.html](https://www.aliexpress.com/category/205000221/t-shirts.html) is t-shirts
+
+
+    * **sort_by** (**default**: best match
+    **total_tranpro_desc**: number of orders) – indeed
+
+
+
 ### class crawliexpress.Client(base_url, cookies=None)
 Exposes methods to fetch various resources.
 
@@ -337,6 +355,21 @@ Sibling pages
 
 #### page( = None)
 Page number
+
+
+### class crawliexpress.Search(client, text, sort_by='default')
+A search
+
+
+* **Parameters**
+
+
+    * **text** – text search
+
+
+    * **sort_by** (**default**: best match
+    **total_tranpro_desc**: number of orders) – indeed
+
 
 
 ### class crawliexpress.SearchPage()
