@@ -10,7 +10,7 @@ client = Client(
 
 page = 1
 while True:
-    search_page = client.get_category(205000314, "t-shirts", page=page)
+    search_page = client.get_search("akame ga kill", page=page)
     print(search_page.page)
     if search_page.has_next_page() is False:
         break

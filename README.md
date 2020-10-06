@@ -1,7 +1,6 @@
 # Crawliexpress
 
 - [Crawliexpress](#crawliexpress)
-  - [TODO](#todo)
   - [Description](#description)
   - [Usage](#usage)
     - [Install](#install)
@@ -9,10 +8,6 @@
     - [Feedbacks](#feedbacks)
     - [Search / Category](#search--category)
   - [API](#api)
-
-## TODO
-
-* full cookie + referer
 
 ## Description
 
@@ -35,7 +30,7 @@ pip install crawliexpress
 ```python
 from crawliexpress import Client
 
-client = Client("https://fr.aliexpress.com")
+client = Client("https://www.aliexpress.com")
 client.get_item("4000505787173")
 ```
 
@@ -47,26 +42,27 @@ from crawliexpress import Client
 from pprint import pprint
 from time import sleep
 
-client = Client("https://fr.aliexpress.com")
+client = Client("https://www.aliexpress.com")
 item = client.get_item("20000001708485")
 
-page_no = 1
+page = 1
 pages = list()
 while True:
-    page = client.get_feedbacks(
+    feedback_page = client.get_feedbacks(
         item.product_id,
         item.owner_member_id,
         item.company_id,
         with_picture=True,
-        page=page_no,
+        page=page,
     )
-    if page.has_next_page() is False:
+    print(feedback_page.page)
+    if feedback_page.has_next_page() is False:
         break
-    page_no += 1
+    page += 1
     sleep(1)
 ```
 
-### Search / Category
+### Category
 
 ```python
 from crawliexpress import Client
@@ -74,47 +70,104 @@ from crawliexpress import Client
 from time import sleep
 
 client = Client(
-    "https://fr.aliexpress.com",
-    xman_t="k++kIGjVqO0lCuOTMhKQUevJCW3sdIn4iNmwfMA7Pj/OqiTgTOYZUJ73JKhAufD1QMqkx8WKpiBq82niJM+AAPFH5pDadbfbs6bo6blWmTKXGATIXt6U19wbWEXrsyXkWREZmTQA0hE6fR6VsvMksQGjgbMHw1OuTKykAN7V+1SGr2lSDxZrWHTVjiQr5KHW+B3J5tfdUL/kD3x0Cks99EIJk3DASJUHTm5JXFbWZk6mAENwoMKA7UcNIa2qJ9L9svSVh913O4YHrv8fE7g1MR2OCMucyISEDhE4oocRZOr20AiPnA7K0saIrCL1YlTsdYrfrT3NvQsosnRJ5kcK6wCNCN2Mb1+RNe7YYEvW9owYF4zr/+Wlgf3bdAsknBq/X2JP8mOnjmMRaHXMk0NI2HrMejliPvsSRUixBHuzLoQgNjpZlzf6PdHD4qfSZAmGTpemKlvm3sU02GbahHPYLe4EU050PJOfdcki/EFV2lp3tZpMP5OkKRzZykcZ2zuicjnPUQM/FFkztEAQEjiWHYcL0vA9/4DTd47mz8tXL2wq0s8HdJ3mWPpyazZAKSb8EDauOLgifNs5cl8VPDV8SIPBfW7mAYw7Fi2zMzAgUdO28+o2zTYszr8rjzNhtOgqybvMH8bao5xTXIzjbcLbQ600vPzdYO0",
-    x5sec="b2261652d676c6f7365617263682d7765623b32223a226164326232393838396239363337363335333865353262623839616339633365434f43787a507346454c364b682f4b626973755264526f4d4d546b334d4451304e5467324d547378227d",
-    aep_usuc_f="site=fra&c_tp=EUR&x_alimid=1970445861&isb=y&ups_u_t=1635073090737&region=FR&b_locale=fr_FR&ae_u_p_s=0",
+    "https://www.aliexpress.com",
+    # copy it from your browser cookies
+    "xxxx",
 )
 
-page_no = 1
+page = 1
 while True:
-
-    # category
-    page = client.get_search(page_no, category_id=205000314)
-
-    # text search
-    # page = client.get_search(page_no, search_text="allo le monde")
-    if page.has_next_page() is False:
+    search_page = client.get_category(205000314, "t-shirts", page=page)
+    print(search_page.page)
+    if search_page.has_next_page() is False:
         break
-    page_no += 1
+    page += 1
     sleep(1)
 ```
 
-- **xman_t**, **x5sec**, **aep_usuc_f**: must be taken from your browser cookies, to avoid captcha and empty result pages
+- Cookies must be taken from your browser cookies, to avoid captcha and empty results. I usually login then copy as cURL a request made by my browser on a category or a text search. Make sure to remove the `Cookie: ` prefix to keep only cookie values.
+
+### Search
+
+```python
+from crawliexpress import Client
+
+from time import sleep
+
+client = Client(
+    "https://www.aliexpress.com",
+    # copy it from your browser cookies
+    "xxxx",
+)
+
+page = 1
+while True:
+    search_page = client.get_search("akame ga kill", page=page)
+    print(search_page.page)
+    if search_page.has_next_page() is False:
+        break
+    page += 1
+    sleep(1)
+```
+
+- Cookies must be taken from your browser cookies, to avoid captcha and empty results. I usually login then copy as cURL a request made by my browser on a category or a text search. Make sure to remove the `Cookie: ` prefix to keep only cookie values.
 
 ## API
 
-### class crawliexpress.Client(base_url, xman_t=None, x5sec=None, aep_usuc_f=None)
+### class crawliexpress.Client(base_url, cookies=None)
 Exposes methods to fetch various resources.
 
 
 * **Parameters**
 
-
+    
     * **base_url** – allows to change locale (not sure about this one)
 
 
-    * **xman_t** – must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
+    * **cookies** – must be taken from your browser cookies, to avoid captcha and empty results. I usually login then copy as cURL a request made by my browser on a category or a text search. Make sure to remove the **Cookie:** prefix to keep only cookie values.
 
 
-    * **x5sec** – must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
+
+#### get_category(category_id, category_name, page=1, sort_by='default')
+Fetches a category page
 
 
-    * **aep_usuc_f** – must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
+* **Parameters**
+
+    
+    * **category_id** – id of the category, category id of [https://www.aliexpress.com/category/205000221/t-shirts.html](https://www.aliexpress.com/category/205000221/t-shirts.html) is 205000220
+
+
+    * **category_name** – name of the category, category name of [https://www.aliexpress.com/category/205000221/t-shirts.html](https://www.aliexpress.com/category/205000221/t-shirts.html) is t-shirts
+
+
+    * **page** – page number
+
+
+    * **sort_by** (**default**: best match
+    **total_tranpro_desc**: number of orders) – indeed
+
+
+
+* **Returns**
+
+    a search page
+
+
+
+* **Return type**
+
+    Crawliexpress.SearchPage
+
+
+
+* **Raises**
+
+    
+    * **CrawliexpressException** – if there was an error fetching the dataz
+
+
+    * **CrawliexpressCaptchaException** – if there is a captcha, make sure to use valid cookies to avoid this
 
 
 
@@ -124,8 +177,8 @@ Fetches a product feedback page
 
 * **Parameters**
 
-
-    * **product_id** – id of the product, item id of [https://fr.aliexpress.com/item/20000001708485.html](https://fr.aliexpress.com/item/20000001708485.html) is 20000001708485
+    
+    * **product_id** – id of the product, item id of [https://www.aliexpress.com/item/20000001708485.html](https://www.aliexpress.com/item/20000001708485.html) is 20000001708485
 
 
     * **owner_member_id** – member id of the product owner, as stored in **Crawliexpress.Item.owner_member_id**
@@ -162,7 +215,7 @@ Fetches a product informations from its id
 
 * **Parameters**
 
-    **item_id** – id of the product to fetch, item id of [https://fr.aliexpress.com/item/20000001708485.html](https://fr.aliexpress.com/item/20000001708485.html) is 20000001708485
+    **item_id** – id of the product to fetch, item id of [https://www.aliexpress.com/item/20000001708485.html](https://www.aliexpress.com/item/20000001708485.html) is 20000001708485
 
 
 
@@ -184,20 +237,17 @@ Fetches a product informations from its id
 
 
 
-#### get_search(page_no=1, category_id=0, search_text=None, sort_by='default')
+#### get_search(text, page=1, sort_by='default')
 Fetches a search page
 
 
 * **Parameters**
 
-
-    * **page_no** – page number
-
-
-    * **category_id** – id of the category, category id of [https://fr.aliexpress.com/category/205000221/t-shirts.html](https://fr.aliexpress.com/category/205000221/t-shirts.html) is 205000221
+    
+    * **text** – text search
 
 
-    * **search_text** – text search
+    * **page** – page number
 
 
     * **sort_by** (**default**: best match
@@ -219,11 +269,11 @@ Fetches a search page
 
 * **Raises**
 
-
+    
     * **CrawliexpressException** – if there was an error fetching the dataz
 
 
-    * **CrawliexpressCaptchaException** – if there is a captcha, make sure to use valid **xman_t, x5sec, aep_usuc_f** cookie values to avoid this
+    * **CrawliexpressCaptchaException** – if there is a captcha, make sure to use valid cookies to avoid this
 
 
 

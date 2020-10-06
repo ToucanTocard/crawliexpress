@@ -20,7 +20,8 @@ class Client:
     Exposes methods to fetch various resources.
 
     :param base_url: allows to change locale (not sure about this one)
-    :param cookies: must be taken from your browser cookies, to avoid captcha and empty results
+    :param cookies:
+        must be taken from your browser cookies, to avoid captcha and empty results. I usually login then copy as cURL a request made by my browser on a category or a text search. Make sure to remove the **Cookie:** prefix to keep only cookie values.
     """
 
     base_url = None
@@ -29,9 +30,10 @@ class Client:
     def __init__(self, base_url, cookies=None):
 
         self.base_url = base_url
-        jar = SimpleCookie()
-        jar.load(cookies)
-        self.cookies = {key: morsel.value for key, morsel in jar.items()}
+        if cookies is not None:
+            jar = SimpleCookie()
+            jar.load(cookies)
+            self.cookies = {key: morsel.value for key, morsel in jar.items()}
 
     def __analyze_response(self, response):
         if response.status_code != 200:
@@ -47,7 +49,7 @@ class Client:
         """
         Fetches a product informations from its id
 
-        :param item_id: id of the product to fetch, item id of https://fr.aliexpress.com/item/20000001708485.html is 20000001708485
+        :param item_id: id of the product to fetch, item id of https://www.aliexpress.com/item/20000001708485.html is 20000001708485
         :return: a product
         :rtype: Crawliexpress.Item
         :raises CrawliexpressException: if there was an error fetching the dataz
@@ -73,7 +75,7 @@ class Client:
         """
         Fetches a product feedback page
 
-        :param product_id: id of the product, item id of https://fr.aliexpress.com/item/20000001708485.html is 20000001708485
+        :param product_id: id of the product, item id of https://www.aliexpress.com/item/20000001708485.html is 20000001708485
         :param owner_member_id: member id of the product owner, as stored in **Crawliexpress.Item.owner_member_id**
         :param page: page number
         :param with_picture: limit to feedbacks with a picture
@@ -105,8 +107,8 @@ class Client:
         """
         Fetches a category page
 
-        :param category_id: id of the category, category id of https://fr.aliexpress.com/category/205000221/t-shirts.html is 205000220
-        :param category_name: name of the category, category name of https://fr.aliexpress.com/category/205000221/t-shirts.html is t-shirts
+        :param category_id: id of the category, category id of https://www.aliexpress.com/category/205000221/t-shirts.html is 205000220
+        :param category_name: name of the category, category name of https://www.aliexpress.com/category/205000221/t-shirts.html is t-shirts
         :param page: page number
         :param sort_by: indeed
         :type sort_by:
@@ -125,9 +127,7 @@ class Client:
             "page": page,
         }
 
-        referer = (
-            f"https://fr.aliexpress.com/category/{category_id}/{category_name}.html"
-        )
+        referer = f"{self.base_url}/category/{category_id}/{category_name}.html"
 
         return self.__get_search(url_params, page, referer=referer)
 
@@ -148,6 +148,8 @@ class Client:
         :raises CrawliexpressCaptchaException: if there is a captcha, make sure to use valid cookies to avoid this
         """
 
+        referer = f"{self.base_url}/wholesale"
+
         return self.__get_search(
             {
                 "SearchText": text,
@@ -155,6 +157,7 @@ class Client:
                 "page": page,
             },
             page,
+            referer=referer,
         )
 
     def __get_search(self, url_params, page, referer=None):
@@ -167,6 +170,7 @@ class Client:
                 "ltype": "wholesale",
                 "origin": "y",
                 "isrefine": "y",
+                "CatId": "0",
             },
             **url_params,
         }
@@ -180,13 +184,8 @@ class Client:
         if referer is not None:
             headers["Referer"] = f"{referer}?{url_params}"
 
-        print(url)
-        print(headers)
-        print(self.cookies)
-
         r = requests.get(url, headers=headers, cookies=self.cookies)
         self.__analyze_response(r)
         search_page = SearchPage()
-        print(r.json())
         search_page.from_json(page, r.json())
         return search_page
