@@ -8,6 +8,7 @@ from crawliexpress.search_page import SearchPage
 
 import requests
 import urllib
+from http.cookies import SimpleCookie
 
 
 FEEDBACK_URL = "https://feedback.aliexpress.com/display/productEvaluation.htm"
@@ -19,26 +20,18 @@ class Client:
     Exposes methods to fetch various resources.
 
     :param base_url: allows to change locale (not sure about this one)
-    :param xman_t: must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
-    :param x5sec: must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
-    :param aep_usuc_f: must be taken from your browser cookies, to avoid captcha and empty result pages on get_search() calls
+    :param cookies: must be taken from your browser cookies, to avoid captcha and empty results
     """
 
     base_url = None
+    cookies = None
 
-    # cookies to avoid capcha
-    xman_t = None
-    x5sec = None
-
-    # cookies for category search
-    aep_usuc_f = None
-
-    def __init__(self, base_url, xman_t=None, x5sec=None, aep_usuc_f=None):
+    def __init__(self, base_url, cookies=None):
 
         self.base_url = base_url
-        self.xman_t = xman_t
-        self.x5sec = x5sec
-        self.aep_usuc_f = aep_usuc_f
+        jar = SimpleCookie()
+        jar.load(cookies)
+        self.cookies = {key: morsel.value for key, morsel in jar.items()}
 
     def __analyze_response(self, response):
         if response.status_code != 200:
@@ -107,14 +100,14 @@ class Client:
         feedback_page.from_html(r.text)
         return feedback_page
 
-    def get_search(self, page_no=1, category_id=0, search_text=None, sort_by="default"):
+    def get_category(self, category_id, category_name, page=1, sort_by="default"):
 
         """
-        Fetches a search page
+        Fetches a category page
 
-        :param page_no: page number
-        :param category_id: id of the category, category id of https://fr.aliexpress.com/category/205000221/t-shirts.html is 205000221
-        :param search_text: text search
+        :param category_id: id of the category, category id of https://fr.aliexpress.com/category/205000221/t-shirts.html is 205000220
+        :param category_name: name of the category, category name of https://fr.aliexpress.com/category/205000221/t-shirts.html is t-shirts
+        :param page: page number
         :param sort_by: indeed
         :type sort_by:
             **default**: best match
@@ -122,31 +115,78 @@ class Client:
         :return: a search page
         :rtype: Crawliexpress.SearchPage
         :raises CrawliexpressException: if there was an error fetching the dataz
-        :raises CrawliexpressCaptchaException: if there is a captcha, make sure to use valid **xman_t, x5sec, aep_usuc_f** cookie values to avoid this
+        :raises CrawliexpressCaptchaException: if there is a captcha, make sure to use valid cookies to avoid this
         """
 
-        params = {
-            "trafficChannel": "main",
-            "d": "y",
+        url_params = {
             "CatId": category_id,
-            "ltype": "wholesale",
+            "CatName": category_name,
             "SortType": sort_by,
-            "page": page_no,
-            "origin": "y",
-            "isrefine": "y",
+            "page": page,
         }
-        if search_text is not None:
-            params["SearchText"] = search_text
-        params = urllib.parse.urlencode(params)
-        url = f"{self.base_url}/glosearch/api/product?{params}"
-        headers = {"Accept": "application/json"}
-        cookies = {
-            "xman_t": self.xman_t,
-            "x5sec": self.x5sec,
-            "aep_usuc_f": self.aep_usuc_f,
+
+        referer = (
+            f"https://fr.aliexpress.com/category/{category_id}/{category_name}.html"
+        )
+
+        return self.__get_search(url_params, page, referer=referer)
+
+    def get_search(self, text, page=1, sort_by="default"):
+
+        """
+        Fetches a search page
+
+        :param text: text search
+        :param page: page number
+        :param sort_by: indeed
+        :type sort_by:
+            **default**: best match
+            **total_tranpro_desc**: number of orders
+        :return: a search page
+        :rtype: Crawliexpress.SearchPage
+        :raises CrawliexpressException: if there was an error fetching the dataz
+        :raises CrawliexpressCaptchaException: if there is a captcha, make sure to use valid cookies to avoid this
+        """
+
+        return self.__get_search(
+            {
+                "SearchText": text,
+                "SortType": sort_by,
+                "page": page,
+            },
+            page,
+        )
+
+    def __get_search(self, url_params, page, referer=None):
+
+        # build url
+        url_params = {
+            **{
+                "trafficChannel": "main",
+                "d": "y",
+                "ltype": "wholesale",
+                "origin": "y",
+                "isrefine": "y",
+            },
+            **url_params,
         }
-        r = requests.get(url, headers=headers, cookies=cookies)
+        url_params = urllib.parse.urlencode(url_params)
+        url = f"{self.base_url}/glosearch/api/product?{url_params}"
+
+        # build headers
+        headers = {
+            "Accept": "application/json",
+        }
+        if referer is not None:
+            headers["Referer"] = f"{referer}?{url_params}"
+
+        print(url)
+        print(headers)
+        print(self.cookies)
+
+        r = requests.get(url, headers=headers, cookies=self.cookies)
         self.__analyze_response(r)
         search_page = SearchPage()
-        search_page.from_json(page_no, r.json())
+        print(r.json())
+        search_page.from_json(page, r.json())
         return search_page

@@ -12,7 +12,7 @@
 
 ## TODO
 
-* finir docstrings
+* full cookie + referer
 
 ## Description
 
