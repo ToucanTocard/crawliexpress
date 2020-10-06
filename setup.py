@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="crawliexpress",  # Replace with your own username
-    version="0.1.1",
+    version="0.1.2",
     author="ToucanTocard",
     author_email="contact@robin.ninja",
     description="Python3 library to ease Aliexpress crawling",
