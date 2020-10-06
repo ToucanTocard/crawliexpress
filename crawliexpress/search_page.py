@@ -1,4 +1,4 @@
-from crawliexpress.exceptions import CrawliexpressException
+import math
 
 
 class SearchPage:
@@ -30,4 +30,4 @@ class SearchPage:
         :rtype: bool
         """
 
-        return (self.page - 1) * size_per_page + len(items) < self.result_count
+        return self.page < math.ceil(self.result_count / self.size_per_page)
