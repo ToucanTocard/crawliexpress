@@ -54,7 +54,8 @@ class Item:
 
         title_module = data["titleModule"]
 
-        self.orders = title_module["tradeCount"]
+        if "tradeCount" in title_module:
+            self.orders = title_module["tradeCount"]
 
         if "feedbackRating" in title_module:
             self.rating = title_module["feedbackRating"]["averageStar"]
