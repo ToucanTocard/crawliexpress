@@ -16,6 +16,9 @@ class Item:
     title = None
     description = None
     image = None
+    rating = None
+    price = None
+    orders = None
 
     def from_html(self, html):
 
@@ -48,3 +51,11 @@ class Item:
         self.title = page_module["title"]
         self.description = page_module["description"]
         self.image = page_module["imagePath"]
+
+        title_module = data["titleModule"]
+
+        self.orders = title_module["tradeCount"]
+        self.rating = title_module["feedbackRating"]["averageStar"]
+
+        price_module = data["priceModule"]
+        self.price = price_module["minAmount"]["value"]
