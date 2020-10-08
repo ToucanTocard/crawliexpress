@@ -20,7 +20,11 @@ class SearchPage:
         self.page = page
         self.result_count = json["resultCount"]
         self.size_per_page = json["resultSizePerPage"]
-        self.items = json["items"]
+
+        if "items" in json:
+            self.items = json["items"]
+        else:
+            self.items = []
 
     def has_next_page(self):
 
